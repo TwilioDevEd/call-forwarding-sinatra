@@ -1,0 +1,16 @@
+language: ruby
+rvm:
+  - rvm 2.1.1
+  - rvm 2.1.5
+  - rvm 2.2.0
+  - rvm 2.2.1
+  - rvm 2.2.2
+
+before_script:
+  - psql -c 'create database call-forwarding;' -U postgres
+
+before_install:
+  - sudo apt-get install postgresql-server-dev-9.1 libpq-dev
+
+install:
+  - bundle
