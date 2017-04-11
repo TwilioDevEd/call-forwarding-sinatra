@@ -43,6 +43,7 @@ To run the app locally, follow these steps:
     ```
     https://d06f533b.ngrok.io/callcongress/welcome
     ```
+
 1. Start your development server:
     ```bash
     bundle exec rackup
