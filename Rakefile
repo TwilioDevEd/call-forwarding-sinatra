@@ -11,6 +11,9 @@ namespace :db do
     sh "psql -c 'create database call_forwarding;' -U #{args[:username]}" do |ok,res|
       #empty block to ignore any failed or success status
     end
+    sh "psql -c 'create database call_forwarding_test;' -U #{args[:username]}" do |ok,res|
+      #empty block to ignore any failed or success status
+    end
 
     begin
       conn = PG::Connection.open(:dbname => 'call_forwarding')

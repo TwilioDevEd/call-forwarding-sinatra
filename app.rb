@@ -17,7 +17,7 @@ module CallForwarding
     config_file 'config/app.yml'
 
     DataMapperHelper.setup(settings.database_url)
-    DataMapperHelper.seed_if_empty
+    DataMapperHelper.seed_if_empty(settings.seed_folder)
 
     # home
     get '/' do

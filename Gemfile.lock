@@ -20,6 +20,7 @@ GEM
       dm-validations (~> 1.2.0)
     data_objects (0.10.17)
       addressable (~> 2.1)
+    database_cleaner (1.5.3)
     diff-lcs (1.3)
     dm-aggregates (1.2.0)
       dm-core (~> 1.2.0)
@@ -62,7 +63,10 @@ GEM
     json (1.8.6)
     json_pure (1.8.6)
     jwt (1.5.6)
+    mini_portile2 (2.1.0)
     multi_json (1.12.1)
+    nokogiri (1.7.1)
+      mini_portile2 (~> 2.1.0)
     pg (0.20.0)
     public_suffix (2.0.5)
     rack (1.6.5)
@@ -111,8 +115,10 @@ PLATFORMS
 
 DEPENDENCIES
   data_mapper
+  database_cleaner
   dm-postgres-adapter
   json
+  nokogiri
   pg
   rack-contrib
   rack-test

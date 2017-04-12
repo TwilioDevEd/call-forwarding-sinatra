@@ -1,0 +1,10 @@
+"Zipcode","ZipCodeType","City","State","LocationType","Lat","Long","Location","Decommisioned","TaxReturnsFiled","EstimatedPopulation","TotalWages"
+"00705","STANDARD","AIBONITO","PR","PRIMARY",18.14,-66.26,"NA-US-PR-AIBONITO","false",,,
+"00610","STANDARD","ANASCO","PR","PRIMARY",18.28,-67.14,"NA-US-PR-ANASCO","false",,,
+"00611","PO BOX","ANGELES","PR","PRIMARY",18.28,-66.79,"NA-US-PR-ANGELES","false",,,
+"00612","STANDARD","ARECIBO","PR","PRIMARY",18.45,-66.73,"NA-US-PR-ARECIBO","false",,,
+"00601","STANDARD","ADJUNTAS","PR","PRIMARY",18.16,-66.72,"NA-US-PR-ADJUNTAS","false",,,
+"00631","PO BOX","CASTANER","PR","PRIMARY",18.19,-66.82,"NA-US-PR-CASTANER","false",,,
+"00602","STANDARD","AGUADA","PR","PRIMARY",18.38,-67.18,"NA-US-PR-AGUADA","false",,,
+"00603","STANDARD","AGUADILLA","PR","PRIMARY",18.43,-67.15,"NA-US-PR-AGUADILLA","false",,,
+"00604","PO BOX","AGUADILLA","PR","PRIMARY",18.43,-67.15,"NA-US-PR-AGUADILLA","false",,,

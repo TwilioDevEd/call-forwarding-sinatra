@@ -17,16 +17,16 @@ module DataMapperHelper
     Senator.auto_upgrade!
   end
 
-  def self.seed_if_empty
+  def self.seed_if_empty(seed_folder)
     begin
       conn = PG::Connection.open(:dbname => 'call_forwarding')
       if Zipcode.all.count == 0
         puts 'Seeding Zipcodes table'
-        DbSeedHelper.parse_and_store_zipcodes('free-zipcode-database.csv', conn)
+        DbSeedHelper.parse_and_store_zipcodes("#{seed_folder}/free-zipcode-database.csv", conn)
       end
       if State.all.count == 0
         puts 'Seeding Senators and States tables'
-        DbSeedHelper.parse_and_store_senators_and_states('senators.json', conn)
+        DbSeedHelper.parse_and_store_senators_and_states("#{seed_folder}/senators.json", conn)
       end
     rescue PG::Error => e
       puts e.message
