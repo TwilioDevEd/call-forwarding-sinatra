@@ -34,6 +34,7 @@ module CallForwarding
         twiml = TwimlGenerator.gather_zipcode_and_look_it_up(
           "Thank you for calling Call Congress! If you wish to
           call your senators, please enter your 5-digit zip code.")
+
       end
       content_type 'text/xml'
       twiml
@@ -42,13 +43,14 @@ module CallForwarding
     post '/callcongress/state-lookup' do
       # Look up state from given zipcode.
       # Once state is found, redirect to call_senators for forwarding.
+
       zip_digits = params['Digits']
       # NB: We don't do any error handling for a missing/erroneous zip code
       # in this sample application. You, gentle reader, should handle that
       # edge case before deploying this code.
-      zip_obj = Zipcode.first(zipcode=>zip_digits)
+      zip_obj = Zipcode.first(:zipcode => zip_digits)
 
-      call_senators(zip_obj.state_id)
+      call_senators(zip_obj.state)
     end
 
     post '/callcongress/set-state' do
@@ -57,13 +59,12 @@ module CallForwarding
       # Redirect to call_senators route.
 
       # Get the digit pressed by the user
-      digits_provided = params('Digits')
+      digits_provided = params['Digits']
 
       # Set state if State correct, else prompt for zipcode.
       if digits_provided == '1'
-          state = params('CallerState')
-          state_obj = State.first(:name => state)
-          call_senators(state_obj.id)
+          state = params['FromState']
+          call_senators(state)
       else digits_provided == '2'
           collect_zip
       end
@@ -91,9 +92,9 @@ module CallForwarding
         enter your 5-digit zip code.")
     end
 
-    def call_senators(state_id)
+    def call_senators(state)
       # Function connecting caller to both of their senators.
-      senators = State.get_senators(state_id)
+      senators = State.get_senators(state)
 
       content_type 'text/xml'
       TwimlGenerator.dial_first_senator_then_connect_second(senators[0], senators[1])

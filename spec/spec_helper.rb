@@ -6,7 +6,6 @@ require_relative '../helpers/datamapper_helper'
 
 RSpec.configure do |config|
   include Rack::Test::Methods
-
   def app
     CallForwarding::App
   end

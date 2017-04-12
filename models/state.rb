@@ -9,8 +9,8 @@ class State
 
   has n, :senators
 
-  def self.get_senators(state_id)
-    Senators.all(Senator.state.state_id => state_id)
+  def self.get_senators(state)
+    Senator.all(Senator.state.name => state)
   end
 
 end
