@@ -30,9 +30,9 @@ module TwimlGenerator
 
   def self.hangup_call()
     Twilio::TwiML::Response.new do |r|
-      e.Say "Thank you for using Call Congress!
+      r.Say "Thank you for using Call Congress!
              Your voice makes a difference. Goodbye."
-      e.Hangup
+      r.Hangup
     end.to_xml
   end
 
