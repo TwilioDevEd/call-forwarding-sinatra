@@ -4,6 +4,8 @@
 
 # Advanced Call Forwarding with Ruby, Sinatra, and Twilio
 
+[![Build Status](https://travis-ci.org/TwilioDevEd/call-forwarding-sinatra.svg?branch=master)](https://travis-ci.org/TwilioDevEd/call-forwarding-sinatra)
+
 Learn how to use [Twilio](https://www.twilio.com) to forward a series of phone calls to your state senators.
 
 ## Local Development
