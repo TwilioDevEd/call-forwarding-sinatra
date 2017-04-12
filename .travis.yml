@@ -7,7 +7,7 @@ rvm:
   - rvm 2.2.2
 
 before_script:
-  - psql -c 'create database call-forwarding;' -U postgres
+  - psql -c 'create database call_forwarding_test;' -U postgres
 
 before_install:
   - sudo apt-get install postgresql-server-dev-9.1 libpq-dev
