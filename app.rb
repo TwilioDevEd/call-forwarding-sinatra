@@ -1,7 +1,5 @@
 require 'sinatra/base'
 require 'sinatra/config_file'
-
-
 require_relative './helpers/datamapper_helper'
 
 ENV['RACK_ENV'] ||= 'development'
@@ -25,5 +23,109 @@ module CallForwarding
       erb :index
     end
 
+    post '/callcongress/welcome' do
+      # Verify or collect State information
+      from_state = params['FromState']
+
+      content_type 'text/xml'
+      Twilio::TwiML::Response.new do |r|
+        if(from_state)
+          r.Say "Thank you for calling congress! It looks like
+                you\'re calling from #{from_state}.
+                If this is correct, please press 1. Press 2 if
+                this is not your current state of residence."
+          r.Gather numDigits: 1,
+                   action: '/callcongress/set-state',
+                   method: 'POST',
+                   from_state: from_state
+        else
+          r.Say "Thank you for calling Call Congress! If you wish to
+                call your senators, please enter your 5-digit zip code."
+          r.Gather numDigits: 5,
+                   action: '/callcongress/state-lookup',
+                   method: 'POST'
+        end
+      end.to_xml
+    end
+
+    post '/callcongress/state-lookup' do
+      # Look up state from given zipcode.
+      # Once state is found, redirect to call_senators for forwarding.
+      zip_digits = params['Digits']
+      # NB: We don't do any error handling for a missing/erroneous zip code
+      # in this sample application. You, gentle reader, should handle that
+      # edge case before deploying this code.
+      zip_obj = Zipcode.first(zipcode=>zip_digits)
+
+      call_senators(zip_obj.state_id)
+    end
+
+    post '/callcongress/set-state' do
+      # Set state for senator call list.
+      # Set user's state from confirmation or user-provided Zip.
+      # Redirect to call_senators route.
+
+      # Get the digit pressed by the user
+      digits_provided = params('Digits')
+
+      # Set state if State correct, else prompt for zipcode.
+      if digits_provided == '1'
+          state = params('CallerState')
+          state_obj = State.first(:name => state)
+          call_senators(state_obj.id)
+      else digits_provided == '2'
+          collect_zip
+      end
+    end
+
+    post '/callcongress/call-second-senator/:senator_id' do
+      # Forward the caller to their second senator.
+      senator = Senator.get(params['senator_id'])
+
+      content_type 'text/xml'
+      Twilio::TwiML::Response.new do |r|
+        r.Say "Connecting you to #{senator.name}"
+        r.Dial senator.phone, action: "/callcongress/goodbye"
+      end
+    end
+
+    post '/callcongress/goodbye' do
+      # Thank user & hang up.
+      content_type 'text/xml'
+      Twilio::TwiML::Response.new do |r|
+        e.Say "Thank you for using Call Congress!
+               Your voice makes a difference. Goodbye."
+        e.Hangup
+      end
+    end
+
+    def collect_zip()
+      # If our state guess is wrong, prompt user for zip code.
+      content_type 'text/xml'
+      Twilio::TwiML::Response.new do |r|
+        r.Say "If you wish to call your senators, please
+              enter your 5-digit zip code."
+        r.Gather numDigits: 2,
+                 action: '/callcongress/state-lookup',
+                 method: 'POST'
+      end.to_xml
+    end
+
+    def call_senators(state_id)
+      # Function connecting caller to both of their senators.
+      senators = State.get_senators(state_id)
+
+      content_type 'text/xml'
+      Twilio::TwiML::Response.new do |r|
+        first_call = senators[0]
+        second_call = senators[1]
+
+        r.Say "Connecting you to #{first_call.name}.
+              After the senator's office ends the call, you will
+              be re-directed to #{second_call.name}"
+        r.Dial first_call.phone,
+               action: "/callcongress/call-second-senator/#{second_call.id}"
+      end.to_xml
+    end
   end
 end
