@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/config_file'
+require 'sinatra/multi_route'
 require_relative './helpers/datamapper_helper'
 require_relative './lib/twiml_generator'
 
@@ -13,6 +14,7 @@ module CallForwarding
     set :raise_errors, false
     set :root, File.dirname(__FILE__)
 
+    register Sinatra::MultiRoute
     register Sinatra::ConfigFile
     config_file 'config/app.yml'
 
@@ -40,7 +42,7 @@ module CallForwarding
       twiml
     end
 
-    post '/callcongress/state-lookup' do
+    route :get, :post, '/callcongress/state-lookup' do
       # Look up state from given zipcode.
       # Once state is found, redirect to call_senators for forwarding.
 
@@ -53,7 +55,7 @@ module CallForwarding
       call_senators(zip_obj.state)
     end
 
-    post '/callcongress/set-state' do
+    route :get, :post, '/callcongress/set-state' do
       # Set state for senator call list.
       # Set user's state from confirmation or user-provided Zip.
       # Redirect to call_senators route.
@@ -70,7 +72,7 @@ module CallForwarding
       end
     end
 
-    post '/callcongress/call-second-senator/:senator_id' do
+    route :get, :post, '/callcongress/call-second-senator/:senator_id' do
       # Forward the caller to their second senator.
       senator = Senator.get(params['senator_id'])
 
@@ -78,14 +80,14 @@ module CallForwarding
       TwimlGenerator.dial_second_senator(senator)
     end
 
-    post '/callcongress/goodbye' do
+    route :get, :post, '/callcongress/goodbye' do
       # Thank user & hang up.
       content_type 'text/xml'
       TwimlGenerator.hangup_call
     end
 
     def collect_zip()
-      # If our state guess is wrong, prompt user for zip code.
+      # Prompt user for zip code.
       content_type 'text/xml'
       twiml = TwimlGenerator.gather_zipcode_and_look_it_up(
         "If you wish to call your senators, please
