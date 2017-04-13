@@ -2,7 +2,6 @@ require 'sinatra/base'
 require 'sinatra/config_file'
 require 'sinatra/multi_route'
 require_relative './helpers/datamapper_helper'
-require_relative './lib/twiml_generator'
 
 ENV['RACK_ENV'] ||= 'development'
 require 'bundler'
@@ -30,16 +29,25 @@ module CallForwarding
       # Verify or collect State information
       from_state = params['FromState']
 
-      if(from_state)
-        twiml = TwimlGenerator.confirm_from_state_attribute_is_correct(from_state)
-      else
-        twiml = TwimlGenerator.gather_zipcode_and_look_it_up(
-          "Thank you for calling Call Congress! If you wish to
-          call your senators, please enter your 5-digit zip code.")
-
-      end
       content_type 'text/xml'
-      twiml
+      Twilio::TwiML::Response.new do |r|
+        if(from_state)
+          r.Say "Thank you for calling congress! It looks like
+                you\'re calling from #{from_state}.
+                If this is correct, please press 1. Press 2 if
+                this is not your current state of residence."
+          r.Gather numDigits: 1,
+                   action: '/callcongress/set-state',
+                   method: 'POST',
+                   from_state: from_state
+        else
+          r.Say "Thank you for calling Call Congress! If you wish to
+                call your senators, please enter your 5-digit zip code."
+          r.Gather numDigits: 5,
+                   action: '/callcongress/state-lookup',
+                   method: 'POST'
+        end
+      end.to_xml
     end
 
     route :get, :post, '/callcongress/state-lookup' do
@@ -77,21 +85,32 @@ module CallForwarding
       senator = Senator.get(params['senator_id'])
 
       content_type 'text/xml'
-      TwimlGenerator.dial_second_senator(senator)
+      Twilio::TwiML::Response.new do |r|
+        r.Say "Connecting you to #{senator.name}"
+        r.Dial senator.phone, action: "/callcongress/goodbye"
+      end.to_xml
     end
 
     route :get, :post, '/callcongress/goodbye' do
       # Thank user & hang up.
       content_type 'text/xml'
-      TwimlGenerator.hangup_call
+      Twilio::TwiML::Response.new do |r|
+        r.Say "Thank you for using Call Congress!
+               Your voice makes a difference. Goodbye."
+        r.Hangup
+      end.to_xml
     end
 
     def collect_zip()
       # Prompt user for zip code.
       content_type 'text/xml'
-      twiml = TwimlGenerator.gather_zipcode_and_look_it_up(
-        "If you wish to call your senators, please
-        enter your 5-digit zip code.")
+      Twilio::TwiML::Response.new do |r|
+        r.Say "If you wish to call your senators, please
+              enter your 5-digit zip code."
+        r.Gather numDigits: 5,
+               action: '/callcongress/state-lookup',
+               method: 'POST'
+      end.to_xml
     end
 
     def call_senators(state)
@@ -99,7 +118,15 @@ module CallForwarding
       senators = State.get_senators(state)
 
       content_type 'text/xml'
-      TwimlGenerator.dial_first_senator_then_connect_second(senators[0], senators[1])
+      first_call = senators[0]
+      second_call = senators[1]
+      Twilio::TwiML::Response.new do |r|
+        r.Say "Connecting you to #{first_call.name}.
+              After the senator's office ends the call, you will
+              be re-directed to #{second_call.name}"
+        r.Dial first_call.phone,
+               action: "/callcongress/call-second-senator/#{second_call.id}"
+      end.to_xml
     end
   end
 end
