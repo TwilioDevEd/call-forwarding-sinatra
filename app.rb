@@ -114,7 +114,7 @@ module CallForwarding
     end
 
     def call_senators(state)
-      # Function connecting caller to both of their senators.
+      # Method connecting caller to both of their senators.
       senators = State.get_senators(state)
 
       content_type 'text/xml'
