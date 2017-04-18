@@ -30,6 +30,7 @@ To run the app locally, follow these steps:
     ```bash
     bundle exec rake db:create[db_user_name]
     ```
+    [Find](http://guides.rubyonrails.org/command_line.html#custom-rake-tasks) more information on how Rake tasks are created and executed.
 
 1. Expose your application to the internet using [ngrok](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-use-ngrok-when-testing-webhooks.html). In a separate terminal session, start ngrok with:
     ```bash
