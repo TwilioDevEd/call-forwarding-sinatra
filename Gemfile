@@ -7,7 +7,7 @@ gem 'data_mapper'
 gem 'dm-postgres-adapter'
 gem 'json'
 gem 'rack-contrib'
-gem 'twilio-ruby', '~> 5.0.0.rc21'
+gem 'twilio-ruby', '~> 5.0.0.rc23'
 gem 'pg'
 
 group :test, :development do

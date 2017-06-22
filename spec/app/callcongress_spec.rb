@@ -56,9 +56,9 @@ describe '/callcongress/state-lookup' do
     expect(last_response.header['Content-Type']).to be =="text/xml;charset=utf-8"
     document = Nokogiri::XML(last_response.body)
     expect(document.at_xpath('//Response//Say').content)
-      .to eq("Connecting you to senator1.
-              After the senator's office ends the call, you will
-              be re-directed to senator2")
+      .to eq("Connecting you to senator1. "\
+             "After the senator's office ends the call, you will "\
+             "be re-directed to senator2")
     expect(document.at_xpath('//Response//Dial/@action').content)
       .to eq('/callcongress/call-second-senator/2')
     expect(document.at_xpath('//Response//Dial').content).to eq('+1')
@@ -82,9 +82,9 @@ describe '/callcongress/set-state' do
     expect(last_response.header['Content-Type']).to be =="text/xml;charset=utf-8"
     document = Nokogiri::XML(last_response.body)
     expect(document.at_xpath('//Response//Say').content)
-      .to eq("Connecting you to senator1.
-              After the senator's office ends the call, you will
-              be re-directed to senator2")
+      .to eq("Connecting you to senator1. "\
+             "After the senator's office ends the call, you will "\
+             "be re-directed to senator2")
     expect(document.at_xpath('//Response//Dial/@action').content)
       .to eq('/callcongress/call-second-senator/2')
     expect(document.at_xpath('//Response//Dial').content).to eq('+1')
