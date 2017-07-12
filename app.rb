@@ -32,29 +32,28 @@ module CallForwarding
       content_type 'text/xml'
       response = Twilio::TwiML::VoiceResponse.new
       if from_state
-        response.say "Thank you for calling congress! It looks like
+        response.say("Thank you for calling congress! It looks like
                 you\'re calling from #{from_state}.
                 If this is correct, please press 1. Press 2 if
-                this is not your current state of residence."
-        response.gather numDigits: 1,
+                this is not your current state of residence.")
+        response.gather(numDigits: 1,
                         action: '/callcongress/set-state',
                         method: 'POST',
-                        from_state: from_state
+                        from_state: from_state)
       else
-        response.say "Thank you for calling Call Congress! If you wish to
-                call your senators, please enter your 5-digit zip code."
-        response.gather numDigits: 5,
+        response.say("Thank you for calling Call Congress! If you wish to
+                call your senators, please enter your 5-digit zip code.")
+        response.gather(numDigits: 5,
                         action: '/callcongress/state-lookup',
-                        method: 'POST'
+                        method: 'POST')
       end
 
-      response.to_xml_str
+      response.to_s
     end
 
     route :get, :post, '/callcongress/state-lookup' do
       # Look up state from given zipcode.
       # Once state is found, redirect to call_senators for forwarding.
-
       zip_digits = params['Digits']
       # NB: We don't do any error handling for a missing/erroneous zip code
       # in this sample application. You, gentle reader, should handle that
@@ -88,18 +87,18 @@ module CallForwarding
       content_type 'text/xml'
       response = Twilio::TwiML::VoiceResponse.new
       response.say "Connecting you to #{senator.name}"
-      response.dial senator.phone, action: '/callcongress/goodbye'
-      response.to_xml_str
+      response.dial(number: senator.phone, action: '/callcongress/goodbye')
+      response.to_s
     end
 
     route :get, :post, '/callcongress/goodbye' do
       # Thank user & hang up.
       content_type 'text/xml'
       response = Twilio::TwiML::VoiceResponse.new
-      response.say "Thank you for using Call Congress!
-               Your voice makes a difference. Goodbye."
+      response.say("Thank you for using Call Congress!
+               Your voice makes a difference. Goodbye.")
       response.hangup
-      response.to_xml_str
+      response.to_s
     end
 
     def collect_zip
@@ -108,11 +107,11 @@ module CallForwarding
       response = Twilio::TwiML::VoiceResponse.new
       response.say "If you wish to call your senators, please
               enter your 5-digit zip code."
-      response.gather numDigits: 5,
+      response.gather(numDigits: 5,
                       action: '/callcongress/state-lookup',
-                      method: 'POST'
+                      method: 'POST')
 
-      response.to_xml_str
+      response.to_s
     end
 
     def call_senators(state)
@@ -123,12 +122,12 @@ module CallForwarding
       first_call = senators[0]
       second_call = senators[1]
       response = Twilio::TwiML::VoiceResponse.new
-      response.say "Connecting you to #{first_call.name}. "\
+      response.say("Connecting you to #{first_call.name}. "\
           "After the senator's office ends the call, you will "\
-          "be re-directed to #{second_call.name}"
-      response.dial(first_call.phone,
+          "be re-directed to #{second_call.name}")
+      response.dial(number: first_call.phone,
                     action: "/callcongress/call-second-senator/#{second_call.id}")
-      response.to_xml_str
+      response.to_s
     end
   end
 end

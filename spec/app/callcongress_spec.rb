@@ -39,7 +39,6 @@ describe '/callcongress/state-lookup' do
     # given
     zipcode = Zipcode.new(id: 1, zipcode: 12345, state: 'PR')
     allow(Zipcode).to receive(:first)
-      .with(anything)
       .and_return(zipcode)
 
     senator1 = Senator.new(id: 1, name: 'senator1', phone: '+1')
