@@ -4,6 +4,12 @@ require 'csv'
 require 'json'
 
 module DbSeedHelper
+
+  def self.insertZipcodes(values, pg_conn)
+    values_string = values.reject(&:empty?).join(',')
+    pg_conn.exec "INSERT INTO zipcodes (zipcode, state) VALUES #{values_string}"
+  end
+
   def self.parse_and_store_zipcodes(file_name, pg_conn)
     values = []
     CSV.foreach(file_name).with_index(1) do |row, line|
@@ -11,11 +17,11 @@ module DbSeedHelper
         values << "(#{row[0]}, '#{row[3]}')"
       end
       if values.size > 50
-        values_string = values.reject(&:empty?).join(',')
-        pg_conn.exec "INSERT INTO zipcodes (zipcode, state) VALUES #{values_string}"
+        insertZipcodes(values, pg_conn)
         values = []
       end
     end
+    insertZipcodes(values, pg_conn) if values.size > 0
   end
 
   def self.parse_and_store_senators_and_states(filename, pg_conn)

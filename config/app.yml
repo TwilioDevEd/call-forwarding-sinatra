@@ -1,7 +1,9 @@
 development:
+  database_name: call_forwarding
   database_url: postgres://localhost/call_forwarding
   seed_folder: seed/development
 
 test:
+  database_name: call_forwarding_test
   database_url: postgres://localhost/call_forwarding_test
   seed_folder: seed/test

@@ -39,7 +39,6 @@ describe '/callcongress/state-lookup' do
     # given
     zipcode = Zipcode.new(id: 1, zipcode: 12345, state: 'PR')
     allow(Zipcode).to receive(:first)
-      .with(anything)
       .and_return(zipcode)
 
     senator1 = Senator.new(id: 1, name: 'senator1', phone: '+1')
@@ -56,9 +55,9 @@ describe '/callcongress/state-lookup' do
     expect(last_response.header['Content-Type']).to be =="text/xml;charset=utf-8"
     document = Nokogiri::XML(last_response.body)
     expect(document.at_xpath('//Response//Say').content)
-      .to eq("Connecting you to senator1.
-              After the senator's office ends the call, you will
-              be re-directed to senator2")
+      .to eq("Connecting you to senator1. "\
+             "After the senator's office ends the call, you will "\
+             "be re-directed to senator2")
     expect(document.at_xpath('//Response//Dial/@action').content)
       .to eq('/callcongress/call-second-senator/2')
     expect(document.at_xpath('//Response//Dial').content).to eq('+1')
@@ -82,9 +81,9 @@ describe '/callcongress/set-state' do
     expect(last_response.header['Content-Type']).to be =="text/xml;charset=utf-8"
     document = Nokogiri::XML(last_response.body)
     expect(document.at_xpath('//Response//Say').content)
-      .to eq("Connecting you to senator1.
-              After the senator's office ends the call, you will
-              be re-directed to senator2")
+      .to eq("Connecting you to senator1. "\
+             "After the senator's office ends the call, you will "\
+             "be re-directed to senator2")
     expect(document.at_xpath('//Response//Dial/@action').content)
       .to eq('/callcongress/call-second-senator/2')
     expect(document.at_xpath('//Response//Dial').content).to eq('+1')

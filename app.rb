@@ -30,35 +30,35 @@ module CallForwarding
       from_state = params['FromState']
 
       content_type 'text/xml'
-      Twilio::TwiML::Response.new do |r|
-        if(from_state)
-          r.Say "Thank you for calling congress! It looks like
+      response = Twilio::TwiML::VoiceResponse.new
+      if from_state
+        response.say("Thank you for calling congress! It looks like
                 you\'re calling from #{from_state}.
                 If this is correct, please press 1. Press 2 if
-                this is not your current state of residence."
-          r.Gather numDigits: 1,
-                   action: '/callcongress/set-state',
-                   method: 'POST',
-                   from_state: from_state
-        else
-          r.Say "Thank you for calling Call Congress! If you wish to
-                call your senators, please enter your 5-digit zip code."
-          r.Gather numDigits: 5,
-                   action: '/callcongress/state-lookup',
-                   method: 'POST'
-        end
-      end.to_xml
+                this is not your current state of residence.")
+        response.gather(numDigits: 1,
+                        action: '/callcongress/set-state',
+                        method: 'POST',
+                        from_state: from_state)
+      else
+        response.say("Thank you for calling Call Congress! If you wish to
+                call your senators, please enter your 5-digit zip code.")
+        response.gather(numDigits: 5,
+                        action: '/callcongress/state-lookup',
+                        method: 'POST')
+      end
+
+      response.to_s
     end
 
     route :get, :post, '/callcongress/state-lookup' do
       # Look up state from given zipcode.
       # Once state is found, redirect to call_senators for forwarding.
-
       zip_digits = params['Digits']
       # NB: We don't do any error handling for a missing/erroneous zip code
       # in this sample application. You, gentle reader, should handle that
       # edge case before deploying this code.
-      zip_obj = Zipcode.first(:zipcode => zip_digits)
+      zip_obj = Zipcode.first(zipcode: zip_digits)
 
       call_senators(zip_obj.state)
     end
@@ -73,10 +73,10 @@ module CallForwarding
 
       # Set state if State correct, else prompt for zipcode.
       if digits_provided == '1'
-          state = params['FromState']
-          call_senators(state)
-      else digits_provided == '2'
-          collect_zip
+        state = params['FromState']
+        call_senators(state)
+      elsif digits_provided == '2'
+        collect_zip
       end
     end
 
@@ -85,32 +85,33 @@ module CallForwarding
       senator = Senator.get(params['senator_id'])
 
       content_type 'text/xml'
-      Twilio::TwiML::Response.new do |r|
-        r.Say "Connecting you to #{senator.name}"
-        r.Dial senator.phone, action: "/callcongress/goodbye"
-      end.to_xml
+      response = Twilio::TwiML::VoiceResponse.new
+      response.say "Connecting you to #{senator.name}"
+      response.dial(number: senator.phone, action: '/callcongress/goodbye')
+      response.to_s
     end
 
     route :get, :post, '/callcongress/goodbye' do
       # Thank user & hang up.
       content_type 'text/xml'
-      Twilio::TwiML::Response.new do |r|
-        r.Say "Thank you for using Call Congress!
-               Your voice makes a difference. Goodbye."
-        r.Hangup
-      end.to_xml
+      response = Twilio::TwiML::VoiceResponse.new
+      response.say("Thank you for using Call Congress!
+               Your voice makes a difference. Goodbye.")
+      response.hangup
+      response.to_s
     end
 
-    def collect_zip()
+    def collect_zip
       # Prompt user for zip code.
       content_type 'text/xml'
-      Twilio::TwiML::Response.new do |r|
-        r.Say "If you wish to call your senators, please
+      response = Twilio::TwiML::VoiceResponse.new
+      response.say "If you wish to call your senators, please
               enter your 5-digit zip code."
-        r.Gather numDigits: 5,
-               action: '/callcongress/state-lookup',
-               method: 'POST'
-      end.to_xml
+      response.gather(numDigits: 5,
+                      action: '/callcongress/state-lookup',
+                      method: 'POST')
+
+      response.to_s
     end
 
     def call_senators(state)
@@ -120,13 +121,13 @@ module CallForwarding
       content_type 'text/xml'
       first_call = senators[0]
       second_call = senators[1]
-      Twilio::TwiML::Response.new do |r|
-        r.Say "Connecting you to #{first_call.name}.
-              After the senator's office ends the call, you will
-              be re-directed to #{second_call.name}"
-        r.Dial first_call.phone,
-               action: "/callcongress/call-second-senator/#{second_call.id}"
-      end.to_xml
+      response = Twilio::TwiML::VoiceResponse.new
+      response.say("Connecting you to #{first_call.name}. "\
+          "After the senator's office ends the call, you will "\
+          "be re-directed to #{second_call.name}")
+      response.dial(number: first_call.phone,
+                    action: "/callcongress/call-second-senator/#{second_call.id}")
+      response.to_s
     end
   end
 end

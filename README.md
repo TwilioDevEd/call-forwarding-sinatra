@@ -28,7 +28,7 @@ To run the app locally, follow these steps:
     Make sure you have installed [PostgreSQL](http://www.postgresql.org/). If on a Mac, I recommend [Postgres.app](http://postgresapp.com). Given that, we'll use a rake task to generate the database used by the app. You just need to provide a valid user with permission to create databases.
 
     ```bash
-    bundle exec rake db:create[db_user_name]
+    bundle exec rake db:create[db_user_name] db:seed
     ```
     [Find](http://guides.rubyonrails.org/command_line.html#custom-rake-tasks) more information on how Rake tasks are created and executed.
 

@@ -3,7 +3,7 @@
         "PR"
     ],
     "PR": [
-        {"name": "Mark Begich", "phone": "+14157671351", "state": "AK"},
-        {"name": "Lisa Murkowski", "phone": "+12174412652", "state": "AK"}]
+        {"name": "Mark Begich", "phone": "+14157671351", "state": "PR"},
+        {"name": "Lisa Murkowski", "phone": "+12174412652", "state": "PR"}]
 
 }
