@@ -72,7 +72,7 @@ GEM
       mini_portile2 (~> 2.2.0)
     pg (0.21.0)
     public_suffix (2.0.5)
-    rack (1.6.8)
+    rack (1.6.12)
     rack-contrib (1.4.0)
       git-version-bump (~> 0.15)
       rack (~> 1.4)
