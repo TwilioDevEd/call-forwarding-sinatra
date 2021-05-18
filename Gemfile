@@ -17,5 +17,5 @@ group :test do
   gem 'rake'
   gem 'rack-test'
   gem 'database_cleaner'
-  gem 'nokogiri'
+  gem 'nokogiri', '>= 1.11.4'
 end
