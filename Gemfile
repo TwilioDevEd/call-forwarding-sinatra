@@ -1,7 +1,7 @@
 # A sample Gemfile
 source 'https://rubygems.org'
-gem 'sinatra', '~> 1.4', '>= 1.4.8'
-gem 'sinatra-contrib'
+gem 'sinatra', '~> 2.2', '>= 2.2.3'
+gem 'sinatra-contrib', '>= 2.2.3'
 gem 'data_mapper'
 gem 'dm-postgres-adapter'
 gem 'json'
