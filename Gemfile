@@ -1,11 +1,11 @@
 # A sample Gemfile
 source 'https://rubygems.org'
-gem 'sinatra', '~> 1.4', '>= 1.4.8'
-gem 'sinatra-contrib'
+gem 'sinatra', '~> 2.0', '>= 2.0.0'
+gem 'sinatra-contrib', '>= 2.0.0'
 gem 'data_mapper'
 gem 'dm-postgres-adapter'
 gem 'json'
-gem 'rack-contrib'
+gem 'rack-contrib', '>= 2.0.0'
 gem 'twilio-ruby', '~> 5.0.0.rc26'
 gem 'pg'
 
